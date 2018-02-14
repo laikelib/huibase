@@ -22,7 +22,7 @@
 
 namespace HUIBASE {
 
-#define LOG_MAX_LEN ( HLEN8_C* 2 )
+#define LOG_MAX_LEN ( HLEN8096_C )
 
     class HCLog {
     public:
