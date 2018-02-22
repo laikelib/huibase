@@ -98,7 +98,6 @@ namespace {
 
 #define HASSERT_THROW_MSG(ff,msg,err) _HASSERT_MSG_THROW_ERR(ff,msg,HERR_NO(err))
 
-
 #endif // matched HASSERT_EXCEPTION
 }
 

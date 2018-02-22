@@ -1,14 +1,14 @@
 /**************************=cpphd=******************************************
- * 
+ *
  * @ File Name: hthread.h
- * 
+ *
  * @ Create Author: Tom Hui
- * 
+ *
  * @ Create Date: Thu Sep 21 16:41 2017
- * 
+ *
  * @ Brief:
  * 	define the thread component.
- * 
+ *
  ****************************************************************************/
 
 
@@ -22,107 +22,106 @@
 
 namespace HUIBASE {
 
-	class HCThreadAttr {
-	public:
-		// default construction
-		HCThreadAttr();
+class HCThreadAttr {
+public:
+	// default construction
+	HCThreadAttr();
 
-		// copy construction
-		HCThreadAttr (const HCThreadAttr& attr) = delete;		
+	// copy construction
+	HCThreadAttr (const HCThreadAttr& attr) = delete;
 
-		~ HCThreadAttr();
+	~ HCThreadAttr();
 
-		HRET SetDetachAttr ();
+	HRET SetDetachAttr ();
 
-		const pthread_attr_t* GetAttrP ()const { return &m_attr; }
-		
-	private:
-		pthread_attr_t m_attr;
+	const pthread_attr_t* GetAttrP ()const { return &m_attr; }
+
+private:
+	pthread_attr_t m_attr;
+};
+
+class HCThread {
+public:
+	using handle_type = pthread_t;
+
+	using pid_t = cid<handle_type>;
+
+	struct impl{
+		std::function<void(void)> func;
+		std::shared_ptr<struct impl> this_ptr;
 	};
 
-	class HCThread {
-	public:
-		using handle_type = pthread_t;
-	
-		using pid_t = cid<handle_type>;
+	HCThread () = default;
 
-		struct impl{
-			std::function<void(void)> func;
-			std::shared_ptr<struct impl> this_ptr;
-		};
+	HCThread (const HCThread& other) : m_id (other.m_id) {	}
 
-		HCThread () = default;
+	HCThread (HCThread&& other) noexcept : m_id(other.m_id) {
+		other.m_id = pid_t{};
+	}
 
-		HCThread (const HCThread& other) : m_id (other.m_id) {	}
-		
-		HCThread (HCThread&& other) noexcept : m_id(other.m_id) {
-			other.m_id = pid_t{};
-		}
-		
-		template<class Func, class... Args>
-		explicit HCThread(Func&& ff, Args&&... args) {
-			auto imp = std::make_shared<impl>();
+	template<class Func, class... Args>
+	explicit HCThread(Func&& ff, Args&&... args) {
+	    auto imp = std::make_shared<impl>();
 
-			imp->func = [=] { Scall(ff, args...); };
-			imp->this_ptr = imp;
+		imp->func = [=] { Scall(ff, args...); };
+		imp->this_ptr = imp;
 
-			HCThreadAttr attr;
+		HCThreadAttr attr;
 
-			if (HNOT_OK(inCreate(imp.get(), attr))) {
-				imp->this_ptr.reset();
-			
-			}
-			
+		if (HNOT_OK(inCreate(imp.get(), attr))) {
+			imp->this_ptr.reset();
+
 		}
 
-		virtual ~ HCThread();
+	}
 
-		template<class Func, class... Args>
-		HRET Create(Func&& ff, Args&&... args) {
-			auto imp = std::make_shared<impl>();
-			imp->func = [=] { Scall(ff, args...); };
-			imp->this_ptr = imp;
+	virtual ~ HCThread();
 
-			HCThreadAttr attr;
-			if (HNOT_OK(inCreate(imp.get(), attr))) {
-				imp->this_ptr.reset();
-				HRETURN(SYS_FAILED);
-			}
+	template<class Func, class... Args>
+	HRET Create(Func&& ff, Args&&... args) {
+		auto imp = std::make_shared<impl>();
+		imp->func = [=] { Scall(ff, args...); };
+		imp->this_ptr = imp;
 
-			HRETURN_OK;
+		HCThreadAttr attr;
+		if (HNOT_OK(inCreate(imp.get(), attr))) {
+			imp->this_ptr.reset();
+			HRETURN(SYS_FAILED);
 		}
 
-		HBOOL IsRunning () const { HRET_BOOL( not (m_id == pid_t{}) ); }
+		HRETURN_OK;
+	}
 
-	    HRET Terminate () ;
+	HBOOL IsRunning () const { HRET_BOOL( not (m_id == pid_t{}) ); }
 
-	    HRET Join (void** rep = nullptr) ;
+    HRET Terminate () ;
 
-	    HRET JoinWithTime (const HCTimeSpan& timespan, void** rep = nullptr);
+    HRET Join (void** rep = nullptr) ;
 
-	    pid_t GetId () const noexcept { return m_id; }
+    HRET JoinWithTime (const HCTimeSpan& timespan, void** rep = nullptr);
 
-		handle_type* GetIdp () noexcept { return m_id.GetIdP();}
+    pid_t GetId () const noexcept { return m_id; }
 
-	    handle_type GetHandle () const noexcept { return m_id.GetId(); }
+	handle_type* GetIdp () noexcept { return m_id.GetIdP();}
 
-	    HSTR GetPidStr () const;
+    handle_type GetHandle () const noexcept { return m_id.GetId(); }
 
-	    static HSTR pid2s (handle_type handle);
+    HSTR GetPidStr () const;
 
-	private:
-		HRET inCreate (impl* p, const HCThreadAttr& attr);
+    static HSTR pid2s (handle_type handle);
 
-		
-		template<class Func, class... Args>
-		static void Scall (Func&& ff, Args&&... args) {
-			ff(args...);
-		}
+private:
+	HRET inCreate (impl* p, const HCThreadAttr& attr);
 
-	private:
-		pid_t m_id{};
+	template<class Func, class... Args>
+	static void Scall (Func&& ff, Args&&... args) {
+		ff(args...);
+	}
 
-	};
+private:
+	pid_t m_id{};
+
+};
 
 }
 

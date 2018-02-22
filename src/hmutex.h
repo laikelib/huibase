@@ -1,4 +1,15 @@
-
+/****************************************************************************
+ *
+ * File Name: hmutex.h
+ *
+ * Create Author: Tom Hui, tomhui1009@yahoo.com, 8613760232170
+ *
+ * Create Date: Thu Dec 08 16:16 2016
+ *
+ * Description:
+ *	pthread mutex lock.
+ *
+ ****************************************************************************/
 
 #ifndef __HMUTEX_H__
 #define __HMUTEX_H__
@@ -55,6 +66,62 @@ private:
 
 };
 
+class CConLock : public HCMutex, public HCCond {
+public:
+	CConLock () {}
+
+
+
+};
+
+
+class CRwlockAttr {
+public:
+	using attr_type = pthread_rwlock_t;
+	using attr_type_ptr = pthread_rwlock_t*;
+
+	CRwlockAttr ();
+
+	CRwlockAttr (const CRwlockAttr& attr ) = delete;
+
+	~ CRwlockAttr ();
+
+private:
+	pthread_rwlockattr_t m_attr;
+
+
+};
+
+
+ class CRwlock {
+ public:
+	 using handle_type = pthread_rwlock_t;
+	 using id_t = cid<handle_type>;
+
+	 CRwlock ();
+
+	 CRwlock (const CRwlockAttr& attr);
+
+	 CRwlock (const CRwlock& rwlock ) = delete;
+
+	 CRwlock (CRwlock&& rw ) noexcept : m_id(rw.m_id) {
+
+		 rw.mid = id_t {};
+
+	 }
+
+	 virtual ~ CRwlock ();
+
+	 HRET RLock ();
+
+	 HRET WLock ();
+
+	 HRET Unlock ();
+
+
+ private:
+	 id_t m_id;
+ };
 
 }
 

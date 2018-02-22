@@ -29,7 +29,7 @@ HCMutex::HCMutex (const HCMutexAttr& attr) throw (HCException) {
 
 	auto cb = pthread_mutex_init(m_id.GetIdP(), attr.GetAttrP());
 	HASSERT_THROW(cb == 0, SYS_FAILED);
-	
+
 }
 
 
@@ -54,6 +54,14 @@ HRET HCMutex::UnLock () throw (HCException) {
 	HASSERT_THROW(cb == 0, SYS_FAILED);
 
 	HRETURN_OK;
+}
+
+CRwlockAttr::CRwlockAttr() {
+
+	auto cb = pthread_rwlockattr_init(&m_attr);
+
+	HASSERT_THROW( cb == 0, SYS_FAILED );
+
 }
 
 }

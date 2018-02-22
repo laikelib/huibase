@@ -14,6 +14,8 @@ public:
 	~HCFileLock ();
 
 public:
+
+
 	HRET WriteLockW (HINT iOffset, HINT iLen = 1, HINT iWhere = SEEK_SET) {
 		return Fcntl(F_SETLKW, F_WRLCK, iOffset, iLen, iWhere);
 	}
