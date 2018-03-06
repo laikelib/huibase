@@ -21,14 +21,15 @@
 
 namespace HUIBASE {
 
+
 class HCMutexAttr{
 public:
 	using attr_type = pthread_mutex_t;
-	using attr_type_ptr = pthread_mutex_t*; 
+	using attr_type_ptr = pthread_mutex_t*;
 
 	HCMutexAttr () throw (HCException);
 
-	HCMutexAttr (const HCMutexAttr& attr) = delete;		
+	HCMutexAttr (const HCMutexAttr& attr) = delete;
 
 	~ HCMutexAttr();
 
@@ -57,20 +58,14 @@ public:
 
 	virtual ~ HCMutex();
 
+    //mid_t GetMid () const { return m_id; }
+
 	HRET Lock () throw (HCException);
 
 	HRET UnLock () throw (HCException);
 
 private:
 	mid_t m_id;
-
-};
-
-class CConLock : public HCMutex, public HCCond {
-public:
-	CConLock () {}
-
-
 
 };
 
@@ -85,6 +80,8 @@ public:
 	CRwlockAttr (const CRwlockAttr& attr ) = delete;
 
 	~ CRwlockAttr ();
+
+    const pthread_rwlockattr_t* GetAttrP () const { return &m_attr; }
 
 private:
 	pthread_rwlockattr_t m_attr;
@@ -106,7 +103,7 @@ private:
 
 	 CRwlock (CRwlock&& rw ) noexcept : m_id(rw.m_id) {
 
-		 rw.mid = id_t {};
+		 rw.m_id = id_t {};
 
 	 }
 
@@ -123,6 +120,39 @@ private:
 	 id_t m_id;
  };
 
+template <class T>
+class READLOCK {
+public:
+    typedef T value_type;
+    typedef T& ref_type;
+    READLOCK (ref_type ins): m_ref(ins) {
+        m_ref.RLock ();
+    }
+
+    ~ READLOCK () {
+        m_ref.Unlock ();
+    }
+
+private:
+    ref_type m_ref;
+};
+
+template <class T>
+class WRITELOCK{
+public:
+typedef T value_type;
+ typedef T& ref_type;
+ WRITELOCK (ref_type ins) : m_ref(ins) {
+    m_ref.WLock ();
+}
+
+ ~ WRITELOCK () {
+    m_ref.Unlock ();
+}
+
+private:
+ ref_type m_ref;
+};
 }
 
 #endif //__HMUTEX_H__

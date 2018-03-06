@@ -64,6 +64,66 @@ CRwlockAttr::CRwlockAttr() {
 
 }
 
+
+CRwlockAttr::~CRwlockAttr() {
+
+	(void)pthread_rwlockattr_destroy(&m_attr);
+
+}
+
+
+  CRwlock::CRwlock() {
+
+    auto cb = pthread_rwlock_init(m_id.GetIdP(), nullptr);
+    HASSERT_THROW(cb == 0, SYS_FAILED);
+
+  }
+
+
+  CRwlock::CRwlock (const CRwlockAttr& attr ) {
+
+    auto cb = pthread_rwlock_init(m_id.GetIdP(), attr.GetAttrP());
+    HASSERT_THROW(cb == 0, SYS_FAILED);
+
+  }
+
+
+  CRwlock::~CRwlock () {
+
+    (void) pthread_rwlock_destroy(m_id.GetIdP());
+
+  }
+
+
+  HRET CRwlock::RLock() {
+
+    auto cb = pthread_rwlock_rdlock(m_id.GetIdP());
+    HASSERT_THROW(cb == 0, SYS_FAILED );
+
+    HRETURN_OK;
+
+  }
+
+
+  HRET CRwlock::WLock() {
+
+    auto cb = pthread_rwlock_wrlock(m_id.GetIdP());
+    HASSERT_THROW(cb == 0, SYS_FAILED);
+
+    HRETURN_OK;
+
+  }
+
+
+  HRET CRwlock::Unlock() {
+
+    auto cb = pthread_rwlock_unlock(m_id.GetIdP());
+    HASSERT_THROW(cb == 0, SYS_FAILED);
+
+    HRETURN_OK;
+  }
+
+
 }
 
 

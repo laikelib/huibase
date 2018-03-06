@@ -76,6 +76,13 @@ namespace {
 			throw HCException((msg), (val), HTRUE, (berr), __LINE__, __FILE__); } \
 		} while(0)
 
+#define _HFAILED_MSG(val,msg) do { \
+        HRET __ret = (val); \
+        HIF_NOTOK(__ret) { \
+            throw HCException((msg),(__ret),HTRUE,HTRUE,__LINE__,__FILE__); \
+        } \
+    } while (0)
+
 #define _IN_MSG_THROW(ff,msg,val,berr) _HASSERT_MSG_VAL_THROW(ff,msg,val,berr)
 
 #define _HASSERT_MSG_THROW(ff,msg,ret) _IN_MSG_THROW(ff,msg,ret,HFALSE)
@@ -98,10 +105,9 @@ namespace {
 
 #define HASSERT_THROW_MSG(ff,msg,err) _HASSERT_MSG_THROW_ERR(ff,msg,HERR_NO(err))
 
+#define HFAILED_MSG(ff,msg) _HFAILED_MSG(ff,msg)
+
 #endif // matched HASSERT_EXCEPTION
 }
 
 #endif
-
-
-

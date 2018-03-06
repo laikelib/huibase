@@ -78,6 +78,24 @@ CAppLock::~CAppLock() {
 }
 
 
+HRET CAppLock:: UnlockApp () {
+
+    if (m_fd > 0) {
+
+        LOG_NS("release file lock");
+        HASSERT_THROW_MSG(lockf(m_fd, F_ULOCK, 0) >= 0, "unlock file lock failed", SYS_FAILED);
+
+        close(m_fd);
+
+        m_fd = 0;
+
+    }
+
+    HRETURN_OK;
+
+}
+
+
 HRET CProcessLock::LockProcess(HCPSZ szFileName)  throw (HCException) {
 
     HASSERT_RETURN((m_fd = open(szFileName, O_CREAT | O_RDWR, 0644)) >= 0, SYS_FAILED);

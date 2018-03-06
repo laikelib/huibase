@@ -14,7 +14,7 @@ class HCCondAttr {
 public:
 	HCCondAttr () throw (HCException);
 
-	HCCondAttr (const HCCondAttr& attr) = delete; 	
+	HCCondAttr (const HCCondAttr& attr) = delete;
 
 	~ HCCondAttr();
 

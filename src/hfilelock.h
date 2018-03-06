@@ -46,6 +46,8 @@ public:
 	CAppLock (HCPSZ szFileName) throw(CAppLockException);
 
 	HRET LockApp(HCPSZ szFileName = ".lock") throw(CAppLockException);
+
+    HRET UnlockApp ();
 	
 	~ CAppLock();
 

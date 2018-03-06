@@ -175,5 +175,14 @@ HRET HCHapp::lockApp () {
 }
 
 
+HRET HCHapp::releaseLock() {
+
+    m_lock.UnlockApp();
+
+    HRETURN_OK;
+
+}
+
+
 }
 

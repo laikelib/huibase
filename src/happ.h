@@ -56,6 +56,8 @@ protected:
 
 	virtual HRET lockApp ();
 
+    HRET releaseLock ();
+
 protected:
 	HCMapConf m_conf;
 	HBOOL m_bDeamon;
