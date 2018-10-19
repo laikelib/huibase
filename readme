@@ -57,3 +57,8 @@ Add CDic, CFileName, CFile
 ==========
 Add Stop to happ. TomHui@Sun Nov 12 1800 CST 2017.
 
+==========
+Add HCMutex holder. TomHui@Sun Jan 3 CST 2018.
+
+==========
+Remove keep socket alive in tcp socket class. TomHui@Tue Jun 19 CST 2018.
