@@ -120,6 +120,25 @@ private:
 	 id_t m_id;
  };
 
+ template <class T>
+ class CMutexHolder {
+ public:
+     typedef T value_type;
+     typedef T& ref_type;
+
+ public:
+ CMutexHolder(ref_type ins) : m_ref (ins) {
+         m_ref.Lock();
+     }
+
+     ~CMutexHolder () { m_ref.UnLock(); }
+
+ private:
+     ref_type m_ref;
+ };
+
+ typedef CMutexHolder<HCMutex> MUTEXHOLDER;
+
 template <class T>
 class READLOCK {
 public:

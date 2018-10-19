@@ -149,7 +149,7 @@ HRET HCSemaphore::Open(){
         }
 
         /* waiting for 0.1 second */
-        husleep(100000);
+        hsleep(0, 100000);
 
     }
 

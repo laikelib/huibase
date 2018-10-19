@@ -1,9 +1,9 @@
 
 
-DIRS = src crypto db 
+DIRS = src crypto db http nosql
 
 all:
-	@for dir in ${DIRS}; do make -C $$dir -j4; echo ; done
+	@for dir in ${DIRS}; do make -C $$dir -j8; echo ; done
 
 
 clean:

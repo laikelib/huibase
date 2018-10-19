@@ -121,11 +121,13 @@ void HCMapConf::Merge(const HCMapConf& conf  ) {
 
 	HPS::iterator cit = m_ps.find(key);
 
-	if (cit == m_ps.end()) {
+    HASSERT_THROW_MSG(cit != m_ps.end(), HSTR("ERROR get key: ") + key, INDEX_OUT);
+
+	/*if (cit == m_ps.end()) {
 
 	    throw HCException(HERR_NO(INDEX_OUT),HTRUE,HFALSE,__LINE__, __FILE__);
 
-	}
+        }*/
 
 	return cit->second;
 

@@ -58,14 +58,14 @@ namespace HUIBASE {
     private:	
 
 	virtual HRET open ();
-	
+
 	virtual HRET close ();
 
     private:
 
 	HSTR m_strFileLogName;
 
-	static const HUINT m_sShiftSize = 1024 * 1024 * 20;
+	static const HUINT m_sShiftSize = 1024 * 1024 * 100;
 
 	HUINT m_len = 0;
 

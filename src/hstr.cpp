@@ -135,6 +135,16 @@ namespace HUIBASE {
 
     }
 
+
+    HBOOL HCStr::IsDigitChar (HCSTRR str) {
+
+        HCSTR cstr = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return str.find_first_not_of(cstr) == HSTR::npos ? HTRUE : HFALSE;
+
+    }
+
+
+
     HINT HCStr::Right(HSTRR str, HSIZE len) {
 
 	HSIZE size = str.length();
@@ -263,7 +273,7 @@ namespace HUIBASE {
 
 #else
 
-	HPATH buf = {0};
+	HCHAR buf[HLEN128_C] = {0};
 
 	cb = vsprintf(buf, fmt, ap);
 
@@ -280,6 +290,12 @@ namespace HUIBASE {
 
     }
 
+
+    HLONG HCStr::stol (HCSTRR str) {
+        return std::stol(str);
+    }
+
+
     HDOUBLE HCStr::stod(HCSTRR str) {
 
 	return std::stod(str);
@@ -289,6 +305,18 @@ namespace HUIBASE {
     HN64 HCStr::ston64(HCSTRR str) {
 
 	return std::stoll(str);
+
+    }
+
+    HLLINT HCStr::stoll(HCSTRR str) {
+
+        return std::stoll(str);
+
+    }
+
+    HSTR HCStr::lltos (HLLINT ll) {
+
+        return to_string(ll);
 
     }
 

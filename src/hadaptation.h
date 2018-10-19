@@ -14,15 +14,34 @@
 
 namespace HUIBASE {
 
+    HRET hsleep(HUINT sec, HUINT nMinSec = 0);
 
-void husleep(HINT usec);
+    HCSTRR hcmap_get (HCPSR ps, HCSTRR strKey);
 
-void hsleep(HINT sec);
+    HUINT hget_rand (HUINT n = 0);
 
+    inline void hstr_uvs (HCSTRR str, HMEMR mem) {
+        std::copy(str.begin(), str.end(), std::back_inserter(mem));
+    }
+
+
+    inline HSTR huvs_str(HCMEMR mem) {
+
+        HSTR str;
+
+        std::copy (mem.begin(), mem.end(), std::back_inserter(str));
+
+        return str;
+    }
+
+
+    inline void hstr_vs (HCSTRR str, HBUFR buf) {
+
+        std::copy (str.begin(), str.end(), std::back_inserter(buf));
+
+    }
 
 
 }
 
-#endif 
-
-
+#endif

@@ -63,11 +63,14 @@ namespace HUIBASE{
     typedef char* HPSZ;
     typedef const char* HCPSZ;
 
+    typedef unsigned char* HUPSZ;
+    typedef const unsigned char* HCUPSZ;
+
     typedef char HBUP[1];
 
     typedef string HSTR;
     typedef const string HCSTR;
-    typedef string& HSTRR;       
+    typedef string& HSTRR;
     typedef const string& HCSTRR;
 
     typedef map<HSTR, HSTR> HPS;
@@ -79,6 +82,16 @@ namespace HUIBASE{
     typedef const vector<HSTR> HCVSTRS;
     typedef vector<HSTR>& HVSTRSR;
     typedef const vector<HSTR>& HCVSTRSR;
+
+    typedef vector<HCHAR> HBUF;
+    typedef vector<HCHAR>& HBUFR;
+    typedef const vector<HCHAR> HCBUF;
+    typedef const vector<HCHAR>& HCBUFR;
+
+    typedef vector<HUCHAR> HMEM;
+    typedef vector<HUCHAR>& HMEMR;
+    typedef const vector<HUCHAR> HCMEM;
+    typedef const vector<HUCHAR>& HCMEMR;
 
     typedef int HINT;
     typedef unsigned int HUINT;
@@ -103,6 +116,7 @@ namespace HUIBASE{
     typedef int HSYS_RET; // syscall return type.(int)
 
     typedef int64_t HN64;
+    typedef uint64_t HUN64;
 
     // define common constant
     #define HLEN_C (64)
@@ -229,7 +243,13 @@ namespace HUIBASE{
     XX(NET_REQ, "get request from network failed") \
     XX(NET_RES, "sent response to network failed") \
     XX(IO_ERR, "I/O failed") \
+    XX(QRY_ERR, "db query failed") \
     XX(DB_DISCONN, "db is not connected") \
+    XX(RDS_ERR, "redis error") \
+    XX(MEM_ERR, "memcached error") \
+    XX(SSL_ERR, "openssl error") \
+    XX(DEP_ERROR, "dep source rise error") \
+    XX(NO_DONE, "nothing done") \
     XX(SYS_SUPP, "operation unsupport") \
     XX(UNKOWN_ERR, "unknown error number.") \
 	\

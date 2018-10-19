@@ -234,6 +234,8 @@ namespace HUIBASE{
 
 	static HBOOL IsDigitAndDos (HCSTRR str);
 
+    static HBOOL IsDigitChar (HCSTRR str);
+
 	static HINT Right(HSTRR str, HSIZE len);
 
 	static HINT Left(HSTRR str, HSIZE len);
@@ -293,9 +295,15 @@ namespace HUIBASE{
 	    return std::stoi(HSTR(sz));
 	}
 
+    static HLONG stol (HCSTRR str);
+
 	static HDOUBLE stod(HCSTRR str);
 
 	static HN64 ston64(HCSTRR str);
+
+    static HLLINT stoll(HCSTRR str);
+
+    static HSTR lltos (HLLINT ll);
 
 	static HSTR itos (HINT i);
 

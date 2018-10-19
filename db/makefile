@@ -16,8 +16,7 @@ SRC = $(wildcard *.cpp)
 
 OBJS = ${patsubst %.cpp, %.o, ${SRC}}
 
-CXX_INCLUDE += -I ../deps/mysql++/lib \
-	-I/usr/include/mysql
+CXX_INCLUDE += -I/usr/include/mysql
 
 CXX_CFLAGS = -fPIC -O2 -g -Wall -std=c++11
 

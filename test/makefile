@@ -9,14 +9,14 @@
 include ../inc.mk
 
 
-TARGET = ${BIN_PATH}/test.a
+TARGET = ${BIN_PATH}/test.out
 
 SRC = $(wildcard *.cpp)
 
 OBJS = ${patsubst %.cpp, %.o, ${SRC}}
 
-CXX_INCLUDE += -I../crypto -I../http
-LINK_CXX_LIBS += ../deps/openssl/libcrypto.a ../deps/curl/lib/.libs/libcurl.a -lz -pthread
+CXX_INCLUDE += -I../nosql -I../deps/libmemcached
+LINK_CXX_LIBS += ../lib/libnosql.a ../lib/libhuibase.a ../deps/libmemcached/libmemcached/.libs/libmemcached.a
 
 ifeq "$(OS_TYPE)" "Darwin"
 LINK_CC_LIBS += -liconv

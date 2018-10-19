@@ -19,6 +19,8 @@ namespace HUIBASE {
 
         typedef void* (*thread_fun_t)(void*);
 
+        static HSTR pid2s (handle_type handle);
+
     public:
         CThread () {}
 
@@ -32,8 +34,13 @@ namespace HUIBASE {
 
         HRET Join (void** retval);
 
+        HRET JoinTimeout (const HCTimeSpan& ts, void** resp);
+
         HRET Detach ();
 
+        handle_type GetHandle () const noexcept { return m_id.GetId(); }
+
+        HSTR GetPidStr () const;
 
 
     private:
@@ -41,6 +48,52 @@ namespace HUIBASE {
 
     };
 
+
+    class CThreadKey {
+    public:
+        using handle_type = pthread_key_t;
+        using id_t = cid<handle_type>;
+
+        typedef void (*destr_function)(void*);
+
+    public:
+        CThreadKey ();
+
+        ~CThreadKey ();
+
+        HRET Create (destr_function ff);
+
+        handle_type GetHandle () const noexcept { return m_id.GetId(); }
+
+        HRET Set (const void* pointer);
+
+
+        void* Get ();
+
+
+    private:
+        id_t m_id{};
+    };
+
+
+    class CThreadOnce {
+    public:
+        using handle_type = pthread_once_t;
+
+        using id_t = cid<pthread_once_t>;
+
+        typedef void (*init_routine) (void);
+
+    public:
+        CThreadOnce ();
+
+        void Once (init_routine ff);
+
+
+    private:
+        id_t m_id{};
+
+    };
 
 }
 

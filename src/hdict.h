@@ -41,6 +41,10 @@ public:
     typedef base::iterator iterator;
     typedef base::const_iterator const_iterator;
 
+    HRET SetParam (HCSTRR str, HCSTRR key, HCSTRR sonKey);
+
+    HSTR ParamToString () const;
+
     HBOOL isDigit (HCSTRR strKey) const;
 
     HCPSZ getSz (HCSTRR strKey) const;
@@ -99,22 +103,9 @@ public:
 	return HasKey (*this, key);
 
     }
+
 };
     
 }
 
 #endif //__HIDICT_H__
-
-
-
-
-
-
-
-
-
-
-
-
-
-

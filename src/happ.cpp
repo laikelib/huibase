@@ -5,16 +5,33 @@
 #include "hstr.h"
 namespace HUIBASE{
 
-static HCHapp* gapp = nullptr;
+static HCApp* gapp = nullptr;
 
 void stop_handle(int sig) {
 
+    LOG_WS("get a stop sig");
+
 	(void)sig;
 	if (gapp) {
+        LOG_WS("stop main process");
 		gapp->Stop();
 	}
 
 }
+
+
+void handle_bug (int sig) {
+
+    LOG_WS("get a bug sig");
+
+    if(gapp) {
+
+        gapp->Handle_sig(sig);
+
+    }
+
+}
+
 
 static const HCHAR * s_cmdopts = "a:b:c:d:e:f:g:h:i:j:k:l:m:n:o:p:ABCDEFGHIJKL";
 static const struct  option s_opts[] = {
@@ -28,31 +45,36 @@ static const struct  option s_opts[] = {
     { NULL, 0, NULL, 0 }
 };
 
-HCHapp::HCHapp()
+HCApp::HCApp()
     : m_bDeamon(HFALSE){
-    
+
     m_conf.SetValue("conf", "../conf/conf");
-	
+
 }
 
-HCHapp::HCHapp(int argc,char *argv[])
+HCApp::HCApp(int argc,const HCHAR* argv[])
     : m_bDeamon(HFALSE){
     anaOpt(argc, argv);
 }
 
 
-HCHapp::~HCHapp () {
+HCApp::~HCApp () {
 
-    
-    
 }
-    
 
-void HCHapp::anaOpt(HINT argc, HCHAR * argv[] ){
 
-    char * cp = NULL, * program = *argv;
+    void HCApp::Handle_sig(int sig) {
+
+        LOG_ERROR("===========================signal [%d]======================", sig);
+
+    }
+
+
+void HCApp::anaOpt(HINT argc, const HCHAR * argv[] ){
+
+    const HCHAR * cp = NULL, *program = *argv;
     m_conf.SetValue(EXE_PATH, program);
-    
+
     cp = strrchr( program, '/');
     if( cp != NULL ){
         program = cp + 1;
@@ -60,7 +82,7 @@ void HCHapp::anaOpt(HINT argc, HCHAR * argv[] ){
     m_conf.SetValue( EXE_NAME, program);
 
     int cb = 0;
-    while ( ( cb = getopt_long( argc, argv, s_cmdopts,s_opts, NULL ) ) != -1 ){
+    while ( ( cb = getopt_long( argc, const_cast<char**>(argv), s_cmdopts,s_opts, NULL ) ) != -1 ){
         switch ( cb ){
             case 'c':
                 m_conf.SetValue("conf", optarg);
@@ -80,10 +102,11 @@ void HCHapp::anaOpt(HINT argc, HCHAR * argv[] ){
     }
 }
 
-void HCHapp::Init(){
+void HCApp::Init(){
 
 	signal(SIGTERM, stop_handle);
-	signal(SIGINT, stop_handle);
+	//signal(SIGINT, stop_handle);
+    //signal(SIGSEGV, handle_bug);
 	gapp = this;
 
 	if(HIS_FALSE(m_conf.IsHere("conf")) ){
@@ -119,12 +142,12 @@ void HCHapp::Init(){
     }
 
     HSTR dea_str;
-	if (HIS_TRUE(m_conf.IsHere("is_deamon"))) {
-		dea_str = m_conf.GetValue("is_deamon");
+	if (HIS_TRUE(m_conf.IsHere("is_daemon"))) {
+		dea_str = m_conf.GetValue("is_daemon");
 	   	HCStr::Trim(dea_str);
-	    LOG_NORMAL("whether deamon instance [%s]", dea_str.c_str());
+	    LOG_NORMAL("whether daemon instance [%s]", dea_str.c_str());
 	    if( dea_str == "1" ){
-	        LOG_NS("set as deamon");
+	        LOG_NS("set as daemon");
 	        setDeamonApp();
 	    }
 	}
@@ -143,7 +166,7 @@ void HCHapp::Init(){
     init();
 }
 
-void HCHapp::setDeamonApp(){
+void HCApp::setDeamonApp(){
     LOG_NS("setas a deamon app");
         
     if( fork() > 0 ){	
@@ -160,7 +183,7 @@ void HCHapp::setDeamonApp(){
 
 }
 
-HRET HCHapp::lockApp () {
+HRET HCApp::lockApp () {
 
     HSTR str = HSTR(".") + GetConfValue(EXE_NAME);
     
@@ -175,7 +198,7 @@ HRET HCHapp::lockApp () {
 }
 
 
-HRET HCHapp::releaseLock() {
+HRET HCApp::releaseLock() {
 
     m_lock.UnlockApp();
 

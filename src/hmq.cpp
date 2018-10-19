@@ -353,7 +353,7 @@ HRET HCMq::open () throw (HCException) {
 
 			if (EAGAIN == errno) {
 
-				husleep(m_control.m_iSendSleepTimeU);
+				hsleep(0, m_control.m_iSendSleepTimeU);
 
 				continue;
 			

@@ -4,7 +4,64 @@
 #include "hdict.h"
 #include "hstr.h"
 
+#include <sstream>
+
 namespace HUIBASE{
+
+    HRET HCParam::SetParam (HCSTRR str, HCSTRR key, HCSTRR sonKey) {
+
+        HSTR _s = str;
+        HCStr::Trim(_s);
+
+        HVSTRS strs;
+        HNOTOK_RETURN(HCStr::Split(str, key, strs));
+
+        for (size_t i = 0; i < strs.size(); ++i) {
+
+            HCSTRR si = strs[i];
+
+            HVSTRS ssi;
+
+            HIF_NOTOK(HCStr::Split(si, sonKey, ssi)) {
+
+                continue;
+
+            }
+
+            if (ssi.size() != 2) {
+                continue;
+            }
+
+            HCSTRR sk = ssi[0];
+            HCSTRR sv = ssi[1];
+
+            setValue(sk, sv);
+
+        }
+
+        HRETURN_OK;
+
+    }
+
+
+    HSTR HCParam::ParamToString() const {
+
+        std::stringstream ss;
+
+        for (const_iterator it = begin(); it != end(); ++it) {
+
+            ss << it->first << "=" << it->second << "&";
+
+        }
+
+        HSTR res = ss.str();
+
+        res = res.substr(0, res.length() - 1);
+
+        return res;
+
+    }
+
 
 
     HBOOL HCParam::isDigit(HCSTRR strKey) const {
@@ -142,23 +199,6 @@ namespace HUIBASE{
 	va_end(ap);
 
     }
-    
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

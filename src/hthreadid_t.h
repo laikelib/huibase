@@ -19,6 +19,8 @@ public:
 
 	const handle_type & GetId () const { return m_handle;}
 
+    handle_type& GetId () { return m_handle; }
+
 	handle_type_ptr GetIdP() { return &m_handle; }
 
 	bool operator== (const cid& id) const noexcept {

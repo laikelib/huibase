@@ -4,7 +4,8 @@
 #include "hsocket.h"
 
 #include <netdb.h>
-
+#include <sys/ioctl.h>
+#include <net/if.h>
 
 namespace HUIBASE  {
 
@@ -236,7 +237,7 @@ HSYS_RET HCSocket::WriteAll (const void* buf, HSIZE nbyte, HINT timeout) throw(H
 	HSIZE sent_bytes = 0; 
 	HSYS_T this_send = 0;
 	while (sent_bytes < nbyte) {
-		do {
+		//do {
 			if (timeout > 0) {
 				fd_set write_fds;
 				FD_ZERO(&write_fds);
@@ -255,7 +256,7 @@ HSYS_RET HCSocket::WriteAll (const void* buf, HSIZE nbyte, HINT timeout) throw(H
 			}
 
 			this_send = ::write(GetSocket(), pos, nbyte - sent_bytes);
-		} while((this_send < 0) && (errno == EINTR) );
+            //} while(this_send >= 0);
 
 		if (this_send <= 0) {
 			return this_send;
@@ -301,10 +302,10 @@ HSYS_RET HCSocket::ReadWithTimeOut (void* buf, HSIZE nbyte, HINT timeout)
 		} else if (cb < 0) {
 			throw HCSocketException("select failed");
 		}
-		
+
 	}
 
-	HSYS_RET ret = ::read(GetSocket(), buf, nbyte);
+    HSYS_RET ret = ::read(GetSocket(), buf, nbyte);
 
 	return ret;
 	
@@ -422,9 +423,7 @@ HRET HCTcpSocket::Init ()  throw (HCException){
 	HASSERT_THROW(sock > 0, SYS_FAILED);
 	SetSocket(sock);
 
-	return SetKeepAlive();
-
-	//HRETURN_OK;
+	HRETURN_OK;
 
 }
 
@@ -445,6 +444,93 @@ HCIp4Addr HCTcpSocket::GetAddr () const {
 
 	return ret;
 }
+
+
+HCUdpSock::~HCUdpSock () {
+}
+
+
+HRET HCUdpSock::Init() {
+
+    HASSERT_THROW_MSG(GetSocket() == SOCKET_DEFA_SOCKET, "socket is invalid", RECREATE);
+
+    auto sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    HASSERT_THROW_MSG(sock > 0, "call socket failed!", SYS_FAILED);
+
+    SetSocket(sock);
+
+    HRETURN_OK;
+
+}
+
+
+HRET HCUdpSock::GetAddrInfo(HSTRR strIp, HINT &iPort) const {
+
+    HCIp4Addr addr = GetAddr();
+
+    return addr.GetAddrInfo(strIp, iPort);
+
+}
+
+
+HCIp4Addr HCUdpSock::GetAddr () const {
+    HCIp4Addr ret ;
+
+    ret.GetFromSocket(*this);
+
+    return ret;
+
+}
+
+
+HRET HCUdpSock::GetMacAddr(HSTRR strMac) const {
+
+    // if fd is invalid, we return error.
+    // Do not throw an exception.
+    HASSERT_RETURN(GetSocket() != SOCKET_DEFA_SOCKET, UN_INIT);
+
+    int success = 0;
+
+    static HCHAR buf[HLEN8_C] = {0};
+    ZERO_MEM(buf, HLEN8_C);
+
+    struct ifreq ifr;
+    struct ifconf ifc;
+
+    ifc.ifc_len = HLEN8_C;
+    ifc.ifc_buf = buf;
+
+    HASSERT_THROW_MSG(ioctl(GetSocket(), SIOCGIFCONF, &ifc) != -1, "ioctl failed", SYS_FAILED);
+
+    struct ifreq* it = ifc.ifc_req;
+
+    const struct ifreq* const end = it + (ifc.ifc_len / sizeof(struct ifreq));
+
+    for (; it != end; ++it) {
+         strcpy(ifr.ifr_name, it->ifr_name);
+        if (ioctl(GetSocket(), SIOCGIFFLAGS, &ifr) == 0) {
+            if (! (ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
+                if (ioctl(GetSocket(), SIOCGIFHWADDR, &ifr) == 0) {
+                    success = 1;
+                    break;
+                }
+            }
+        }
+        else { /* handle error */ }
+    }
+
+    unsigned char mac_address[6] = {0};
+
+    if (success) memcpy(mac_address, ifr.ifr_hwaddr.sa_data, 6);
+
+    sprintf(buf, "%02x%02x%02x%02x%02x%02x",
+            mac_address[0], mac_address[1], mac_address[2],
+            mac_address[3], mac_address[4], mac_address[5]);
+
+    strMac = buf;
+    HRETURN_OK;
+}
+
 
 
 HCTcpClient::HCTcpClient (HUINT len) 

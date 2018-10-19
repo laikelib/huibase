@@ -23,17 +23,21 @@ namespace HUIBASE{
 
 void stop_handle(int sig);
 
-class HCHapp{
+ void handle_bug (int sig);
+
+class HCApp{
 public:
-	HCHapp();
-	HCHapp(HINT argc, HCHAR * argv[] );	
-	virtual ~ HCHapp();
+	HCApp();
+	HCApp(HINT argc, const HCHAR * argv[] );
+	virtual ~ HCApp();
 
 public:
 	virtual HBOOL Run() = 0;
 	virtual void Init();		
 	
-	void Stop () { _running = false; } 
+	void Stop () { _running = false; }
+
+    void Handle_sig (int sig);
 
 	HBOOL IsRunning () const { HRET_BOOL(_running); }
 
@@ -44,7 +48,7 @@ protected:
 	virtual void init() {}
 
 private:
-	void anaOpt(int argc, char ** argv );
+	void anaOpt(int argc, const HCHAR ** argv );
 	
 
 protected:

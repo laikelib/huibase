@@ -1,14 +1,14 @@
 /**************************=cpphd=******************************************
- * 
+ *
  * @ File Name: hsocket.h
- * 
+ *
  * @ Create Author: Tom Hui
- * 
+ *
  * @ Create Date: Sun Sep 17 22:37 2017
- * 
+ *
  * @ Brief:
  * 	define the network peer comonent.
- * 
+ *
  ****************************************************************************/
 
 #ifndef __HSOCKET_H__
@@ -26,6 +26,8 @@ namespace HUIBASE {
     class HCSocket;
 
     class HCTcpSocket;
+
+    class HCUdpSock;
 
     class HCAddr;
 
@@ -61,11 +63,11 @@ public:
 	st_tcp,
 	st_udp,
     };
-    
+
 public:
     HCSocket (HFD_T fd = SOCKET_DEFA_SOCKET)
 	: m_fd (fd) {}
-    
+
     HCSocket (const HCSocket& sock) = delete;
 
     // move construction
@@ -79,14 +81,14 @@ public:
     HBOOL IsGoodSocket () const { HRET_BOOL(m_fd != SOCKET_DEFA_SOCKET); }
 
     virtual HRET Init () = 0;
-	
+
     virtual SOCK_TYPE GetSocketType () const {
 	return st_no;
     }
 
-    virtual HRET Bind (const HCAddr& addr) const throw(HCSocketException); 
+    virtual HRET Bind (const HCAddr& addr) const throw(HCSocketException);
 
-    virtual HRET Connect (const HCAddr& addr) const throw(HCSocketException) ; 
+    virtual HRET Connect (const HCAddr& addr) const throw(HCSocketException) ;
 
     virtual HRET ConnectWithTimeOut (const HCAddr& addr, HINT timeout = SOCKET_MIN_TIMEOUT) const throw(HCSocketException);
 
@@ -95,8 +97,15 @@ public:
     virtual HRET Accept (HCSocket& sock, HCAddr& ) const;
 
     void Close() {
-		::close(m_fd);
-		m_fd = SOCKET_DEFA_SOCKET;
+
+        if (m_fd != SOCKET_DEFA_SOCKET) {
+
+            ::close(m_fd);
+
+            m_fd = SOCKET_DEFA_SOCKET;
+
+        }
+
     }
 
     HRET GetAddrInfo (HCAddr& addr) const;
@@ -142,6 +151,8 @@ public:
 
 	HFD_T GetSocket () const { return m_fd; }
 
+    void Invalid () { m_fd = SOCKET_DEFA_SOCKET; }
+
 	void SetSocket (int fd) { m_fd = fd;}
 
 	static HRET GetLocalIp (HVSTRSR ips) throw(HCException);
@@ -170,6 +181,28 @@ public:
 	return st_tcp;
     }
 
+
+};
+
+
+class HUIBASE::HCUdpSock : public HUIBASE::HCSocket {
+ public:
+    HCUdpSock (HFD_T fd = SOCKET_DEFA_SOCKET)
+        : HCSocket(fd) { }
+
+    HCUdpSock (const HCUdpSock& sock) = delete;
+
+    virtual ~HCUdpSock ();
+
+    virtual HRET Init () override;
+
+    virtual HRET GetAddrInfo (HSTRR strIp, HINT& iPort) const override;
+
+    virtual SOCK_TYPE GetSocketType () const override { return st_udp;  }
+
+    HRET GetMacAddr (HSTRR strMac) const;
+
+    virtual HCIp4Addr GetAddr () const;
 
 };
 

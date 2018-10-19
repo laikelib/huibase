@@ -16,10 +16,10 @@ namespace HTTP {
 
 	enum enum_http_opt {
 		eho_userpw = (HINT)CURLOPT_USERPWD,
-		
+
 		eho_end,
 	};
-	
+
 	struct http_opt{
 		enum_http_opt opt;
 		HSTR optValue;
@@ -28,6 +28,8 @@ namespace HTTP {
 	using HTTP_OPTS = std::vector<http_opt>;
 
 	HRET HttpGet (HCSTRR strUrl, HSTRR strRes);
+
+    HRET HttpGetWithHeader (HCSTRR strUrl, const HTTP_OPTS& opts, HSTRR strRes);
 
 	HRET HttpPost (HCSTRR strUrl, HCSTRR strData, HSTRR strRes);
 

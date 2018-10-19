@@ -76,7 +76,7 @@ namespace HUIBASE {
 #endif
 
 	m_len += strlen(buf);
-	
+
 	shiftLog();
 
 	if (HINVA_FD == m_fd) {
@@ -84,8 +84,6 @@ namespace HUIBASE {
 	    open();
 
 	}
-
-	
 
 	ssize_t wcb = write(m_fd,buf, strlen(buf));
 	if (wcb < 0) {
@@ -95,7 +93,6 @@ namespace HUIBASE {
 	HRETURN_OK;
 
     }
-    
 
     HSTR HCLog::newLogName() {
 
@@ -149,9 +146,8 @@ namespace HUIBASE {
 
 		m_todayIndex = 0;
 
-	    // shift log file.
 	    close();
-	    
+
 	}
 
 	if (m_len > m_sShiftSize) {
@@ -163,7 +159,7 @@ namespace HUIBASE {
 	}
 
 	HRETURN_OK;
-	
+
     }
 
 
@@ -195,9 +191,6 @@ namespace HUIBASE {
 		gs_log.SetFileLogName(strFilename);
 
 		gs_plog = &gs_log;
-
-		//gs_log_holder.SetPoint(gs_plog);
-
 
 		HRETURN_OK;
 
