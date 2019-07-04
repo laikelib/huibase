@@ -1,2 +1,2 @@
 # huibase
-laikelib huibase https://www.laikelib.org
+http://likelib.io
